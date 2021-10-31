@@ -1,9 +1,13 @@
+using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Api;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json.Linq;
 
 namespace ApiTests
 {
@@ -67,10 +71,13 @@ namespace ApiTests
         [TestMethod]
         public async Task PostSingleUserLocation()
         {
-            var response = await testServer.CreateRequest("locations").PostAsync();
+            var json = new JObject { { "latitude", 51.5 }, { "longitude", -1.5 } };
+            var body = new StringContent(json.ToString(), Encoding.UTF8, "application/json");
+            var client = testServer.CreateClient();
+            var response = await client.PostAsync("locations/user1", body);
             Assert.IsTrue(response.IsSuccessStatusCode);
             var content = await response.Content.ReadAsStringAsync();
-            Assert.AreEqual("PostSingleUserLocation", content);
+            Assert.AreEqual("PostSingleUserLocation user1 51.5 -1.5", content);
         }
     }
 }

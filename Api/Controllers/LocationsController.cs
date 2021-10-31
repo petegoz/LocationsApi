@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Model;
 
 namespace Api.Controllers
 {
@@ -34,10 +35,17 @@ namespace Api.Controllers
             return Ok("GetSingleUserLocationHistory");
         }
 
+        /// <summary>
+        /// Create a Location record from JSON data containing latitude and longitude in the request body.
+        /// </summary>
+        /// <param name="userId">The ID of an existing user.</param>
+        /// <param name="location">JSON data containing latitude and longitude.</param>
+        /// <returns>Todo return the new location</returns>
         [HttpPost]
-        public OkObjectResult PostSingleUserLocation()
+        [Route("{userId}")]
+        public OkObjectResult PostSingleUserLocation(string userId, [FromBody] Location location)
         {
-            return Ok("PostSingleUserLocation");
+            return Ok($"PostSingleUserLocation {userId} {location.Latitude} {location.Longitude}");
         }
 
         [HttpGet]
