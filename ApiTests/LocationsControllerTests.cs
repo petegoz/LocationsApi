@@ -47,10 +47,14 @@ namespace ApiTests
         [TestMethod]
         public async Task GetSingleUserLocation()
         {
+            // Create a new location:
+            await PostUser("user1", 51.5, -1.5);
             var response = await testServer.CreateRequest("locations/user1").GetAsync();
             Assert.IsTrue(response.IsSuccessStatusCode);
-            var content = await response.Content.ReadAsStringAsync();
-            Assert.AreEqual("GetSingleUserLocation", content);
+            var location = await response.Content.ReadFromJsonAsync<Location>();
+            Assert.AreEqual("user1", location?.UserId);
+            Assert.AreEqual(51.5, location?.Latitude);
+            Assert.AreEqual(-1.5, location?.Longitude);
         }
 
         [TestMethod]
@@ -74,15 +78,28 @@ namespace ApiTests
         [TestMethod]
         public async Task PostSingleUserLocation()
         {
-            var json = new JObject { { "latitude", 51.5 }, { "longitude", -1.5 } };
-            var body = new StringContent(json.ToString(), Encoding.UTF8, "application/json");
-            var client = testServer.CreateClient();
-            var response = await client.PostAsync("locations/user1", body);
-            Assert.IsTrue(response.IsSuccessStatusCode);
-            var location = await response.Content.ReadFromJsonAsync<Location>();
+            var location = await PostUser("user1", 51.5, -1.5);
             Assert.AreEqual("user1", location?.UserId);
             Assert.AreEqual(51.5, location?.Latitude);
             Assert.AreEqual(-1.5, location?.Longitude);
+        }
+
+        /// <summary>
+        /// Post a new location for a user.
+        /// </summary>
+        /// <param name="user">The user's ID.</param>
+        /// <param name="latitude">The user's new latitude.</param>
+        /// <param name="longitude">The user's new longitude.</param>
+        /// <returns>The new location.</returns>
+        private static async Task<Location> PostUser(string user, double latitude, double longitude)
+        {
+            var json = new JObject {{"latitude", latitude}, {"longitude", longitude}};
+            var body = new StringContent(json.ToString(), Encoding.UTF8, "application/json");
+            var client = testServer.CreateClient();
+            var response = await client.PostAsync($"locations/{user}", body);
+            Assert.IsTrue(response.IsSuccessStatusCode);
+            var location = await response.Content.ReadFromJsonAsync<Location>();
+            return location;
         }
     }
 }

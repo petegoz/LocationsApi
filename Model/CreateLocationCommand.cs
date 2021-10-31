@@ -1,4 +1,6 @@
-﻿using Operations;
+﻿using System;
+using Model.InMemoryDataAccess;
+using Operations;
 
 namespace Model
 {
@@ -16,6 +18,7 @@ namespace Model
 
         public Location Run()
         {
+            Location.DateTime = DateTimeOffset.UtcNow;
             Location.UserId = UserId;
             locationWriter.Location = Location;
             return locationWriter.Write();

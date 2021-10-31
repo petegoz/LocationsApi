@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Model;
+using Model.InMemoryDataAccess;
 
 namespace Api
 {
@@ -20,11 +21,25 @@ namespace Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddSingleton<LocationStore>();
+            AddCommandsAndQueries(services);
+            AddInMemoryDataAccess(services);
+        }
+
+        private static void AddCommandsAndQueries(IServiceCollection services)
+        {
             services.AddScoped<CreateLocationCommand>();
-            services.AddScoped<LocationWriter>();
             services.AddScoped<LocationsQuery>();
+            services.AddScoped<UserLocationQuery>();
+        }
+
+        private static void AddInMemoryDataAccess(IServiceCollection services)
+        {
+            services.AddSingleton<LocationStore>();
             services.AddScoped<LocationsReader>();
+            services.AddScoped<UserLocationReader>();
+            services.AddScoped<AreaLocationsReader>();
+            services.AddScoped<UserHistoryReader>();
+            services.AddScoped<LocationWriter>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

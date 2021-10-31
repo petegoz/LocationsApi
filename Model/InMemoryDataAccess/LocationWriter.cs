@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Operations;
 
-namespace Model
+namespace Model.InMemoryDataAccess
 {
     public class LocationWriter: IWriter<Location>
     {

@@ -11,12 +11,14 @@ namespace Api.Controllers
     {
         private readonly CreateLocationCommand createLocationCommand;
         private readonly LocationsQuery locationsQuery;
+        private readonly UserLocationQuery userLocationQuery;
         private readonly ILogger<LocationsController> _logger;
 
-        public LocationsController(CreateLocationCommand createLocationCommand, LocationsQuery locationsQuery, ILogger<LocationsController> logger)
+        public LocationsController(CreateLocationCommand createLocationCommand, LocationsQuery locationsQuery, UserLocationQuery userLocationQuery, ILogger<LocationsController> logger)
         {
             this.createLocationCommand = createLocationCommand;
             this.locationsQuery = locationsQuery;
+            this.userLocationQuery = userLocationQuery;
             _logger = logger;
         }
 
@@ -27,12 +29,18 @@ namespace Api.Controllers
             return Ok(locations);
         }
 
+        /// <summary>
+        /// Get the latest location of a single user.
+        /// </summary>
+        /// <param name="userId">ID of an existing user.</param>
+        /// <returns>Latest location of the user.</returns>
         [HttpGet]
         [Route("{userId}")]
         public OkObjectResult GetSingleUserLocation(string userId)
         {
-            // todo
-            return Ok("GetSingleUserLocation");
+            userLocationQuery.UserId = userId;
+            var location = userLocationQuery.Run();
+            return Ok(location);
         }
 
         [HttpGet]
