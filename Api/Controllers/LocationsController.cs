@@ -57,7 +57,7 @@ namespace Api.Controllers
         /// </summary>
         /// <param name="userId">The ID of an existing user.</param>
         /// <param name="location">JSON data containing latitude and longitude.</param>
-        /// <returns>Todo return the new location</returns>
+        /// <returns>The newly saved location.</returns>
         [HttpPost]
         [Route("{userId}")]
         public ActionResult<Location> PostSingleUserLocation(string userId, [FromBody] Location location)

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -39,12 +40,25 @@ namespace ApiTests
         }
 
         [TestMethod]
-        public async Task GetAllUsersLocations()
+        public async Task GetAllUsersCurrentLocations()
         {
+            await PostUser("user1", 51.5, -1.5);
+            await PostUser("user1", 51.6, -1.6);
+            await PostUser("user2", 51.3, -1.3);
             var response = await testServer.CreateRequest("locations").GetAsync();
             Assert.IsTrue(response.IsSuccessStatusCode);
-            var locations = await response.Content.ReadFromJsonAsync<IEnumerable<Location>>();
-            Assert.AreEqual(0, locations?.Count());
+            var locations = await response.Content.ReadFromJsonAsync<IList<Location>>();
+            Assert.IsNotNull(locations);
+            Assert.AreEqual(2, locations.Count);
+            var location1 = locations.First();
+            Assert.AreEqual("user1", location1.UserId);
+            Assert.AreEqual(51.6, location1.Latitude);
+            Assert.AreEqual(-1.6, location1.Longitude);
+
+            var location2 = locations.Last();
+            Assert.AreEqual("user2", location2.UserId);
+            Assert.AreEqual(51.3, location2.Latitude);
+            Assert.AreEqual(-1.3, location2.Longitude);
         }
 
         [TestMethod]
@@ -77,19 +91,37 @@ namespace ApiTests
             await PostUser("user2", 51.5, -1.5);
             var response = await testServer.CreateRequest("locations/user1/history").GetAsync();
             Assert.IsTrue(response.IsSuccessStatusCode);
-            var locations = await response.Content.ReadFromJsonAsync<IEnumerable<Location>>();
-            Assert.AreEqual(2, locations?.Count());
+            var locations = await response.Content.ReadFromJsonAsync<IList<Location>>();
+            Assert.IsNotNull(locations);
+            Assert.AreEqual(2, locations.Count);
+
+            // The first location returned should be the most recent.
+            Assert.AreEqual("user1", locations.First().UserId);
+            Assert.AreEqual(51.6, locations.First().Latitude);
+            Assert.AreEqual(-1.6, locations.First().Longitude);
+
+            // The last location returned should be the oldest.
+            Assert.AreEqual("user1", locations.Last().UserId);
+            Assert.AreEqual(51.5, locations.Last().Latitude);
+            Assert.AreEqual(-1.5, locations.Last().Longitude);
+
         }
 
         [TestMethod]
         public async Task GetAllUsersLocationsWithinArea()
         {
-            await PostUser("user1", 51.5, -1.5);
-            await PostUser("user2", 52.5, -1.5);
+            // Only 1 user is currently within the area
+            await PostUser("user1", 50.5, -1.5);    // User 1 outside area
+            await PostUser("user1", 51.7, -1.7);    // User 1 moves into area
+            await PostUser("user2", 52.5, -1.5);    // User 2 outside area
             var response = await testServer.CreateRequest("locations/area?n=52.0&s=51.0&e=-1.0&w=-2.0").GetAsync();
             Assert.IsTrue(response.IsSuccessStatusCode);
-            var locations = await response.Content.ReadFromJsonAsync<IEnumerable<Location>>();
-            Assert.AreEqual(1, locations?.Count());
+            var locations = await response.Content.ReadFromJsonAsync<IList<Location>>();
+            Assert.IsNotNull(locations);
+            Assert.AreEqual(1, locations.Count);
+            Assert.AreEqual("user1", locations.First().UserId);
+            Assert.AreEqual(51.7, locations.First().Latitude);
+            Assert.AreEqual(-1.7, locations.First().Longitude);
         }
 
         [TestMethod]

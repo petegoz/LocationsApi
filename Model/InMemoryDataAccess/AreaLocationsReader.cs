@@ -18,10 +18,12 @@ namespace Model.InMemoryDataAccess
         public IEnumerable<Location> Read()
         {
             var locations = locationStore.Where(location => Area.Contains(location));
-            
-            // Todo current locations only
-            // return userLocations.OrderByDescending(location => location.DateTime);
-            return locations;
+
+            // Group the locations by user:
+            var userLocations = locations.GroupBy(location => location.UserId);
+
+            // Take the current location for each user:
+            return userLocations.Select(singleUserLocations => singleUserLocations.OrderByDescending(location => location.DateTime).FirstOrDefault()).ToList();
         }
     }
 }

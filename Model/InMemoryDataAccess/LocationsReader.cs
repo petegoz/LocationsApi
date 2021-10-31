@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Model.InMemoryDataAccess;
+using System.Linq;
 using Operations;
 
-namespace Model
+namespace Model.InMemoryDataAccess
 {
     /// <summary>
     /// Read current locations for all users.
@@ -18,8 +18,11 @@ namespace Model
 
         public IEnumerable<Location> Read()
         {
-            // todo latest only for each user
-            return locationStore;
+            // Group the locations by user:
+            var userLocations = locationStore.GroupBy(location => location.UserId);
+
+            // Take the current location for each user:
+            return userLocations.Select(singleUserLocations => singleUserLocations.OrderByDescending(location => location.DateTime).FirstOrDefault()).ToList();
         }
     }
 }
