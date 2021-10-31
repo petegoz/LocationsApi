@@ -42,6 +42,7 @@ namespace ApiTests
         [TestMethod]
         public async Task GetAllUsersCurrentLocations()
         {
+            // There are 3 locations but 1 user has moved:
             await PostUser("user1", 51.5, -1.5);
             await PostUser("user1", 51.6, -1.6);
             await PostUser("user2", 51.3, -1.3);
@@ -74,6 +75,9 @@ namespace ApiTests
         public async Task GetSingleUserLocation()
         {
             // Create a new location:
+            await PostUser("user1", 51.4, -1.4);
+
+            // Add a newer location for the same user
             await PostUser("user1", 51.5, -1.5);
             var response = await testServer.CreateRequest("locations/user1").GetAsync();
             Assert.IsTrue(response.IsSuccessStatusCode);
@@ -104,7 +108,6 @@ namespace ApiTests
             Assert.AreEqual("user1", locations.Last().UserId);
             Assert.AreEqual(51.5, locations.Last().Latitude);
             Assert.AreEqual(-1.5, locations.Last().Longitude);
-
         }
 
         [TestMethod]
