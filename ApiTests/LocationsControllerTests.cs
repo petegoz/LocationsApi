@@ -24,6 +24,8 @@ namespace ApiTests
         {
             var response = await testServer.CreateRequest("locations").GetAsync();
             Assert.IsTrue(response.IsSuccessStatusCode);
+            var content = await response.Content.ReadAsStringAsync();
+            Assert.AreEqual("GetAllUsersLocations", content);
         }
 
         [TestMethod]
@@ -38,6 +40,8 @@ namespace ApiTests
         {
             var response = await testServer.CreateRequest("locations/user1").GetAsync();
             Assert.IsTrue(response.IsSuccessStatusCode);
+            var content = await response.Content.ReadAsStringAsync();
+            Assert.AreEqual("GetSingleUserLocation", content);
         }
 
         [TestMethod]
@@ -45,13 +49,17 @@ namespace ApiTests
         {
             var response = await testServer.CreateRequest("locations/user1/history").GetAsync();
             Assert.IsTrue(response.IsSuccessStatusCode);
+            var content = await response.Content.ReadAsStringAsync();
+            Assert.AreEqual("GetSingleUserLocationHistory", content);
         }
 
         [TestMethod]
         public async Task GetAllUsersLocationsWithinArea()
         {
-            var response = await testServer.CreateRequest("locations/area?n=52.0&e-1.0&s=51.0&w=-2.0").GetAsync();
+            var response = await testServer.CreateRequest("locations/area?n=52.0&e=-1.0&s=51.0&w=-2.0").GetAsync();
             Assert.IsTrue(response.IsSuccessStatusCode);
+            var content = await response.Content.ReadAsStringAsync();
+            Assert.AreEqual("GetAllUsersLocationsWithArea 52 -1 51 -2", content);
         }
 
         [TestMethod]
@@ -59,6 +67,8 @@ namespace ApiTests
         {
             var response = await testServer.CreateRequest("locations").PostAsync();
             Assert.IsTrue(response.IsSuccessStatusCode);
+            var content = await response.Content.ReadAsStringAsync();
+            Assert.AreEqual("PostSingleUserLocation", content);
         }
     }
 }

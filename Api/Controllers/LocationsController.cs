@@ -42,9 +42,9 @@ namespace Api.Controllers
 
         [HttpGet]
         [Route("area")]
-        public OkObjectResult GetAllUsersLocationsWithArea(double n, double e, double s, double w)
+        public OkObjectResult GetAllUsersLocationsWithArea([FromQuery] double n, [FromQuery] double e, [FromQuery] double s, [FromQuery] double w)
         {
-            return Ok("GetAllUsersLocationsWithArea");
+            return Ok($"GetAllUsersLocationsWithArea {n} {e} {s} {w}");
         }
     }
 }
