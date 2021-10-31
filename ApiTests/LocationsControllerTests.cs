@@ -29,9 +29,11 @@ namespace ApiTests
         }
 
         [TestMethod]
-        public async Task GetLocationsWrongUrl()
+        [DataRow("wrongurl")]
+        [DataRow("locations/wrongurl/user1")]
+        public async Task GetLocationsWrongUrl(string url)
         {
-            var response = await testServer.CreateRequest("wrongurl").GetAsync();
+            var response = await testServer.CreateRequest(url).GetAsync();
             Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
         }
 
