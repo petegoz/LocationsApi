@@ -47,8 +47,9 @@ namespace Api.Controllers
         [Route("{userId}/history")]
         public OkObjectResult GetSingleUserLocationHistory(string userId)
         {
-            // todo
-            return Ok("GetSingleUserLocationHistory");
+            locationsQuery.UserId = userId;
+            var locations = locationsQuery.Run();
+            return Ok(locations);
         }
 
         /// <summary>
@@ -69,10 +70,11 @@ namespace Api.Controllers
 
         [HttpGet]
         [Route("area")]
-        public ActionResult<IEnumerable<Location>> GetAllUsersLocationsWithArea([FromQuery] double n, [FromQuery] double e, [FromQuery] double s, [FromQuery] double w)
+        public ActionResult<IEnumerable<Location>> GetAllUsersLocationsWithArea([FromQuery] double n, [FromQuery] double s, [FromQuery] double e, [FromQuery] double w)
         {
-            // todo
-            return Ok($"GetAllUsersLocationsWithArea {n} {e} {s} {w}");
+            locationsQuery.Area = new Area(n, s, e, w);
+            var locations = locationsQuery.Run();
+            return Ok(locations);
         }
     }
 }

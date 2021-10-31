@@ -21,20 +21,25 @@ namespace Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            AddInMemoryDataStore(services);
             AddCommandsAndQueries(services);
             AddInMemoryDataAccess(services);
         }
 
-        private static void AddCommandsAndQueries(IServiceCollection services)
+        protected void AddInMemoryDataStore(IServiceCollection services)
+        {
+            services.AddSingleton<LocationStore>();
+        }
+
+        protected void AddCommandsAndQueries(IServiceCollection services)
         {
             services.AddScoped<CreateLocationCommand>();
             services.AddScoped<LocationsQuery>();
             services.AddScoped<UserLocationQuery>();
         }
 
-        private static void AddInMemoryDataAccess(IServiceCollection services)
+        protected void AddInMemoryDataAccess(IServiceCollection services)
         {
-            services.AddSingleton<LocationStore>();
             services.AddScoped<LocationsReader>();
             services.AddScoped<UserLocationReader>();
             services.AddScoped<AreaLocationsReader>();

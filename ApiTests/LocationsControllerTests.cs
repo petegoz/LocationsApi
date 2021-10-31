@@ -8,12 +8,17 @@ using System.Threading.Tasks;
 using Api;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Model;
+using Model.InMemoryDataAccess;
 using Newtonsoft.Json.Linq;
 
 namespace ApiTests
 {
+    /// <summary>
+    /// These are integration tests, so that they cover routing, model binding and related issues.
+    /// </summary>
     [TestClass]
     public class LocationsControllerTests
     {
@@ -24,6 +29,13 @@ namespace ApiTests
         {
             var builder = new WebHostBuilder().UseStartup<Startup>();
             testServer = new TestServer(builder);
+        }
+
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            var locationStore = testServer.Services.GetService<LocationStore>();
+            locationStore?.Clear();
         }
 
         [TestMethod]
@@ -60,19 +72,24 @@ namespace ApiTests
         [TestMethod]
         public async Task GetSingleUserLocationHistory()
         {
+            await PostUser("user1", 51.5, -1.5);
+            await PostUser("user1", 51.6, -1.6);
+            await PostUser("user2", 51.5, -1.5);
             var response = await testServer.CreateRequest("locations/user1/history").GetAsync();
             Assert.IsTrue(response.IsSuccessStatusCode);
-            var content = await response.Content.ReadAsStringAsync();
-            Assert.AreEqual("GetSingleUserLocationHistory", content);
+            var locations = await response.Content.ReadFromJsonAsync<IEnumerable<Location>>();
+            Assert.AreEqual(2, locations?.Count());
         }
 
         [TestMethod]
         public async Task GetAllUsersLocationsWithinArea()
         {
-            var response = await testServer.CreateRequest("locations/area?n=52.0&e=-1.0&s=51.0&w=-2.0").GetAsync();
+            await PostUser("user1", 51.5, -1.5);
+            await PostUser("user2", 52.5, -1.5);
+            var response = await testServer.CreateRequest("locations/area?n=52.0&s=51.0&e=-1.0&w=-2.0").GetAsync();
             Assert.IsTrue(response.IsSuccessStatusCode);
-            var content = await response.Content.ReadAsStringAsync();
-            Assert.AreEqual("GetAllUsersLocationsWithArea 52 -1 51 -2", content);
+            var locations = await response.Content.ReadFromJsonAsync<IEnumerable<Location>>();
+            Assert.AreEqual(1, locations?.Count());
         }
 
         [TestMethod]

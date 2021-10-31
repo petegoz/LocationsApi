@@ -33,10 +33,12 @@ namespace Model
             }
             if (!string.IsNullOrEmpty(UserId))
             {
+                userHistoryReader.UserId = UserId;
                 return userHistoryReader.Read();
             }
             if (Area != null)
             {
+                areaLocationsReader.Area = Area;
                 return areaLocationsReader.Read();
             }
             return locationsReader.Read();
