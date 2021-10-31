@@ -8,10 +8,12 @@ namespace Api.Controllers
     [Route("[controller]")]
     public class LocationsController : ControllerBase
     {
+        private readonly CreateLocationCommand createLocationCommand;
         private readonly ILogger<LocationsController> _logger;
 
-        public LocationsController(ILogger<LocationsController> logger)
+        public LocationsController(CreateLocationCommand createLocationCommand, ILogger<LocationsController> logger)
         {
+            this.createLocationCommand = createLocationCommand;
             _logger = logger;
         }
 
@@ -45,7 +47,10 @@ namespace Api.Controllers
         [Route("{userId}")]
         public OkObjectResult PostSingleUserLocation(string userId, [FromBody] Location location)
         {
-            return Ok($"PostSingleUserLocation {userId} {location.Latitude} {location.Longitude}");
+            createLocationCommand.UserId = userId;
+            createLocationCommand.Location = location;
+            var storedLocation = createLocationCommand.Run();
+            return Ok($"PostSingleUserLocation {storedLocation.UserId} {storedLocation.Latitude} {storedLocation.Longitude}");
         }
 
         [HttpGet]
