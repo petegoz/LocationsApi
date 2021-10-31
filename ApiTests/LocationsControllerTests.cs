@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -130,10 +132,18 @@ namespace ApiTests
         [TestMethod]
         public async Task PostSingleUserLocation()
         {
-            var location = await PostUser("user1", 51.5, -1.5);
+            var (code, location) = await PostUser("user1", 51.5, -1.5);
+            Assert.AreEqual(HttpStatusCode.Created, code);
             Assert.AreEqual("user1", location?.UserId);
             Assert.AreEqual(51.5, location?.Latitude);
             Assert.AreEqual(-1.5, location?.Longitude);
+        }
+
+        [TestMethod]
+        public async Task PostSingleUserLocationOutOfRange()
+        {
+            var (code, location) = await PostUser("user1", 95.0, -1.5);
+            Assert.AreEqual(HttpStatusCode.BadRequest, code);
         }
 
         /// <summary>
@@ -143,15 +153,14 @@ namespace ApiTests
         /// <param name="latitude">The user's new latitude.</param>
         /// <param name="longitude">The user's new longitude.</param>
         /// <returns>The new location.</returns>
-        private static async Task<Location> PostUser(string user, double latitude, double longitude)
+        private static async Task<Tuple<HttpStatusCode, Location>> PostUser(string user, double latitude, double longitude)
         {
             var json = new JObject {{"latitude", latitude}, {"longitude", longitude}};
             var body = new StringContent(json.ToString(), Encoding.UTF8, "application/json");
             var client = testServer.CreateClient();
             var response = await client.PostAsync($"locations/{user}", body);
-            Assert.IsTrue(response.IsSuccessStatusCode);
             var location = await response.Content.ReadFromJsonAsync<Location>();
-            return location;
+            return new Tuple<HttpStatusCode, Location>(response.StatusCode, location);
         }
     }
 }
