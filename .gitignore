@@ -3,3 +3,6 @@ Api/obj/
 .vs/
 ApiTests/bin/
 ApiTests/obj/
+Model/obj/
+Operations/bin/
+Operations/obj/
