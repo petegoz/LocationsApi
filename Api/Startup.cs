@@ -23,6 +23,8 @@ namespace Api
             services.AddSingleton<LocationStore>();
             services.AddScoped<CreateLocationCommand>();
             services.AddScoped<LocationWriter>();
+            services.AddScoped<LocationsQuery>();
+            services.AddScoped<LocationsReader>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

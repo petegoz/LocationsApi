@@ -1,12 +1,15 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 using Api;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Model;
 using Newtonsoft.Json.Linq;
 
 namespace ApiTests
@@ -28,8 +31,8 @@ namespace ApiTests
         {
             var response = await testServer.CreateRequest("locations").GetAsync();
             Assert.IsTrue(response.IsSuccessStatusCode);
-            var content = await response.Content.ReadAsStringAsync();
-            Assert.AreEqual("GetAllUsersLocations", content);
+            var locations = await response.Content.ReadFromJsonAsync<IEnumerable<Location>>();
+            Assert.AreEqual(0, locations?.Count());
         }
 
         [TestMethod]
@@ -76,8 +79,10 @@ namespace ApiTests
             var client = testServer.CreateClient();
             var response = await client.PostAsync("locations/user1", body);
             Assert.IsTrue(response.IsSuccessStatusCode);
-            var content = await response.Content.ReadAsStringAsync();
-            Assert.AreEqual("PostSingleUserLocation user1 51.5 -1.5", content);
+            var location = await response.Content.ReadFromJsonAsync<Location>();
+            Assert.AreEqual("user1", location?.UserId);
+            Assert.AreEqual(51.5, location?.Latitude);
+            Assert.AreEqual(-1.5, location?.Longitude);
         }
     }
 }

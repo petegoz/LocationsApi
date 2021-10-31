@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Model;
 
@@ -9,24 +10,28 @@ namespace Api.Controllers
     public class LocationsController : ControllerBase
     {
         private readonly CreateLocationCommand createLocationCommand;
+        private readonly LocationsQuery locationsQuery;
         private readonly ILogger<LocationsController> _logger;
 
-        public LocationsController(CreateLocationCommand createLocationCommand, ILogger<LocationsController> logger)
+        public LocationsController(CreateLocationCommand createLocationCommand, LocationsQuery locationsQuery, ILogger<LocationsController> logger)
         {
             this.createLocationCommand = createLocationCommand;
+            this.locationsQuery = locationsQuery;
             _logger = logger;
         }
 
         [HttpGet]
-        public OkObjectResult GetAllUsersLocations()
+        public ActionResult<IEnumerable<Location>> GetAllUsersLocations()
         {
-            return Ok("GetAllUsersLocations");
+            var locations = locationsQuery.Run();
+            return Ok(locations);
         }
 
         [HttpGet]
         [Route("{userId}")]
         public OkObjectResult GetSingleUserLocation(string userId)
         {
+            // todo
             return Ok("GetSingleUserLocation");
         }
 
@@ -34,6 +39,7 @@ namespace Api.Controllers
         [Route("{userId}/history")]
         public OkObjectResult GetSingleUserLocationHistory(string userId)
         {
+            // todo
             return Ok("GetSingleUserLocationHistory");
         }
 
@@ -45,18 +51,19 @@ namespace Api.Controllers
         /// <returns>Todo return the new location</returns>
         [HttpPost]
         [Route("{userId}")]
-        public OkObjectResult PostSingleUserLocation(string userId, [FromBody] Location location)
+        public ActionResult<Location> PostSingleUserLocation(string userId, [FromBody] Location location)
         {
             createLocationCommand.UserId = userId;
             createLocationCommand.Location = location;
             var storedLocation = createLocationCommand.Run();
-            return Ok($"PostSingleUserLocation {storedLocation.UserId} {storedLocation.Latitude} {storedLocation.Longitude}");
+            return CreatedAtAction(nameof(PostSingleUserLocation), storedLocation);
         }
 
         [HttpGet]
         [Route("area")]
-        public OkObjectResult GetAllUsersLocationsWithArea([FromQuery] double n, [FromQuery] double e, [FromQuery] double s, [FromQuery] double w)
+        public ActionResult<IEnumerable<Location>> GetAllUsersLocationsWithArea([FromQuery] double n, [FromQuery] double e, [FromQuery] double s, [FromQuery] double w)
         {
+            // todo
             return Ok($"GetAllUsersLocationsWithArea {n} {e} {s} {w}");
         }
     }
