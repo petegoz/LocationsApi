@@ -1,2 +1,5 @@
 Api/bin/
 Api/obj/
+.vs/
+ApiTests/bin/
+ApiTests/obj/
