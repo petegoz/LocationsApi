@@ -15,9 +15,36 @@ namespace Api.Controllers
         }
 
         [HttpGet]
-        public OkObjectResult Get()
+        public OkObjectResult GetAllUsersLocations()
         {
-            return Ok("API Working");
+            return Ok("GetAllUsersLocations");
+        }
+
+        [HttpGet]
+        [Route("{userId}")]
+        public OkObjectResult GetSingleUserLocation(string userId)
+        {
+            return Ok("GetSingleUserLocation");
+        }
+
+        [HttpGet]
+        [Route("{userId}/history")]
+        public OkObjectResult GetSingleUserLocationHistory(string userId)
+        {
+            return Ok("GetSingleUserLocationHistory");
+        }
+
+        [HttpPost]
+        public OkObjectResult PostSingleUserLocation()
+        {
+            return Ok("PostSingleUserLocation");
+        }
+
+        [HttpGet]
+        [Route("area")]
+        public OkObjectResult GetAllUsersLocationsWithArea(double n, double e, double s, double w)
+        {
+            return Ok("GetAllUsersLocationsWithArea");
         }
     }
 }
