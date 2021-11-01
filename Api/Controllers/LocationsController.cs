@@ -92,7 +92,7 @@ namespace Api.Controllers
             }
             else if (result.Exception != null)
             {
-                return StatusCode(500, result.Message);
+                return StatusCode((int) HttpStatusCode.InternalServerError, result.Message);
             }
             else if (result.StatusCode == HttpStatusCode.NotFound)
             {
@@ -103,7 +103,7 @@ namespace Api.Controllers
                 return BadRequest(result.Message);
             }
 
-            return StatusCode(500, result.Message);
+            return StatusCode((int) result.StatusCode, result.Message);
         }
     }
 }
