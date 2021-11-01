@@ -90,6 +90,18 @@ namespace ApiTests
         }
 
         [TestMethod]
+        public async Task GetUserLocationForNonExistentUser()
+        {
+            // Create a new location:
+            await PostUser("user1", 51.4, -1.4);
+
+            // Request location for a different, non existent user
+            var response = await testServer.CreateRequest("locations/user2").GetAsync();
+            Assert.IsFalse(response.IsSuccessStatusCode);
+            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [TestMethod]
         public async Task GetSingleUserLocationHistory()
         {
             await PostUser("user1", 51.5, -1.5);

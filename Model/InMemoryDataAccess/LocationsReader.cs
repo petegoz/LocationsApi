@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using Operations;
 
 namespace Model.InMemoryDataAccess
@@ -32,7 +33,8 @@ namespace Model.InMemoryDataAccess
             }
             catch (Exception exception)
             {
-                return Result<IEnumerable<Location>>.CreateFailureResult($"LocationsReader: {exception.Message}", exception);
+                var message = $"LocationsReader: {exception.Message}";
+                return Result<IEnumerable<Location>>.CreateFailureResult(message, HttpStatusCode.InternalServerError, exception);
             }
         }
     }

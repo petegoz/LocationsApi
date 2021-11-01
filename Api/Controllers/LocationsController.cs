@@ -94,10 +94,16 @@ namespace Api.Controllers
             {
                 return StatusCode(500, result.Message);
             }
-            else
+            else if (result.StatusCode == HttpStatusCode.NotFound)
+            {
+                return NotFound(result.Message);
+            }
+            else if (result.StatusCode == HttpStatusCode.BadRequest)
             {
                 return BadRequest(result.Message);
             }
+
+            return StatusCode(500, result.Message);
         }
     }
 }

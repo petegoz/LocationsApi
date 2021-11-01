@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using Operations;
 
 namespace Model.InMemoryDataAccess
@@ -21,7 +22,8 @@ namespace Model.InMemoryDataAccess
             }
             catch (Exception exception)
             {
-                return Result<Location>.CreateFailureResult($"LocationWriter: {exception.Message}", exception);
+                var message = $"LocationWriter: {exception.Message}";
+                return Result<Location>.CreateFailureResult(message, HttpStatusCode.InternalServerError, exception);
             }
         }
 

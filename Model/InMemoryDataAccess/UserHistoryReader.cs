@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using Operations;
 
 namespace Model.InMemoryDataAccess
@@ -23,14 +24,15 @@ namespace Model.InMemoryDataAccess
                 var userLocations = locationStore.Where(location => location.UserId == UserId).ToList();
                 if (!userLocations.Any())
                 {
-                    return Result<IEnumerable<Location>>.CreateFailureResult($"No locations found for user {UserId}");
+                    return Result<IEnumerable<Location>>.CreateFailureResult($"No locations found for user {UserId}", HttpStatusCode.NotFound);
                 }
                 var locations = userLocations.OrderByDescending(location => location.DateTime);
                 return Result<IEnumerable<Location>>.CreateSuccessResult(locations, $"Locations found for user {UserId}");
             }
             catch (Exception exception)
             {
-                return Result<IEnumerable<Location>>.CreateFailureResult($"UserHistoryReader: {exception.Message}", exception);
+                var message = $"UserHistoryReader: {exception.Message}";
+                return Result<IEnumerable<Location>>.CreateFailureResult(message, HttpStatusCode.InternalServerError, exception);
             }
         }
     }
