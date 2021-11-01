@@ -7,3 +7,5 @@ Model/obj/
 Operations/bin/
 Operations/obj/
 Model/bin/
+Deploy/airbox_vm
+Deploy/airbox_vm.pub
