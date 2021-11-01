@@ -1,7 +1,7 @@
 ﻿namespace Operations
 {
-    public interface IQuery<out T>
+    public interface IQuery<T>
     {
-        public T Run();
+        public Result<T> Run();
     }
 }

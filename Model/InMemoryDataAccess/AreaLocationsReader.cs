@@ -15,15 +15,16 @@ namespace Model.InMemoryDataAccess
 
         public Area Area { get; set; }
 
-        public IEnumerable<Location> Read()
+        public Result<IEnumerable<Location>> Read()
         {
-            var locations = locationStore.Where(location => Area.Contains(location));
+            var areaLocations = locationStore.Where(location => Area.Contains(location));
 
             // Group the locations by user:
-            var userLocations = locations.GroupBy(location => location.UserId);
+            var userLocations = areaLocations.GroupBy(location => location.UserId);
 
             // Take the current location for each user:
-            return userLocations.Select(singleUserLocations => singleUserLocations.OrderByDescending(location => location.DateTime).FirstOrDefault()).ToList();
+            var locations = userLocations.Select(singleUserLocations => singleUserLocations.OrderByDescending(location => location.DateTime).FirstOrDefault()).ToList();
+            return Result<IEnumerable<Location>>.CreateSuccessResult(locations, "Current locations found in area.");
         }
     }
 }

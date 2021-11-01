@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Model.InMemoryDataAccess;
 using Operations;
 
@@ -25,11 +24,11 @@ namespace Model
 
         public Area Area { get; set; }
 
-        public IEnumerable<Location> Run()
+        public Result<IEnumerable<Location>> Run()
         {
             if (UserId != null && Area != null)
             {
-                throw new NotImplementedException("Please specify area or user ID, not both.");
+                return Result<IEnumerable<Location>>.CreateFailureResult("Please specify area or user ID, not both.");
             }
             if (!string.IsNullOrEmpty(UserId))
             {

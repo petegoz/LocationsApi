@@ -16,13 +16,16 @@ namespace Model.InMemoryDataAccess
             this.locationStore = locationStore;
         }
 
-        public IEnumerable<Location> Read()
+        public Result<IEnumerable<Location>> Read()
         {
             // Group the locations by user:
             var userLocations = locationStore.GroupBy(location => location.UserId);
 
             // Take the current location for each user:
-            return userLocations.Select(singleUserLocations => singleUserLocations.OrderByDescending(location => location.DateTime).FirstOrDefault()).ToList();
+            var locations = userLocations.Select(singleUserLocations => 
+                singleUserLocations.OrderByDescending(location => location.DateTime).FirstOrDefault()).ToList();
+
+            return Result<IEnumerable<Location>>.CreateSuccessResult(locations, "Current locations found.");
         }
     }
 }

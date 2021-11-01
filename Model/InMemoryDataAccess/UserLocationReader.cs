@@ -17,10 +17,11 @@ namespace Model.InMemoryDataAccess
 
         public string UserId { get; set; }
 
-        public Location Read()
+        public Result<Location> Read()
         {
             var userLocations = locationStore.Where(location => location.UserId == UserId);
-            return userLocations.OrderByDescending(location => location.DateTime).FirstOrDefault();
+            var currentLocation = userLocations.OrderByDescending(location => location.DateTime).FirstOrDefault();
+            return Result<Location>.CreateSuccessResult(currentLocation, $"Current location found for user {UserId}");
         }
     }
 }

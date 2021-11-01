@@ -15,10 +15,11 @@ namespace Model.InMemoryDataAccess
 
         public string UserId { get; set; }
 
-        public IEnumerable<Location> Read()
+        public Result<IEnumerable<Location>> Read()
         {
             var userLocations = locationStore.Where(location => location.UserId == UserId);
-            return userLocations.OrderByDescending(location => location.DateTime);
+            var locations = userLocations.OrderByDescending(location => location.DateTime);
+            return Result<IEnumerable<Location>>.CreateSuccessResult(locations, $"Locations found for user {UserId}");
         }
     }
 }

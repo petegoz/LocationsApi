@@ -16,7 +16,7 @@ namespace Model
         public string UserId { get; set; }
         public Location Location { get; set; }
 
-        public Location Run()
+        public Result<Location> Run()
         {
             Location.DateTime = DateTimeOffset.UtcNow;
             Location.UserId = UserId;

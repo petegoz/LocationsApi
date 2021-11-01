@@ -1,7 +1,7 @@
 ﻿namespace Operations
 {
-    public interface IReader<out T>
+    public interface IReader<T>
     {
-        public T Read();
+        public Result<T> Read();
     }
 }

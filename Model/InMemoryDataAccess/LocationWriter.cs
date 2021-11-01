@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Operations;
+﻿using Operations;
 
 namespace Model.InMemoryDataAccess
 {
@@ -12,10 +11,10 @@ namespace Model.InMemoryDataAccess
             this.locationStore = locationStore;
         }
 
-        public Location Write()
+        public Result<Location> Write()
         {
             locationStore.Add(Location);
-            return locationStore.FirstOrDefault(location => location.UserId == Location.UserId);
+            return Result<Location>.CreateSuccessResult(Location, "New location saved.");
         }
 
         public Location Location { get; set; }

@@ -1,4 +1,6 @@
-﻿namespace Operations
+﻿using System;
+
+namespace Operations
 {
     /// <summary>
     /// Result contains data from the operation (command, query, reader or writer) with
@@ -21,6 +23,11 @@
         /// True if the operation succeeded.
         /// </summary>
         public bool Success { get; private set; }
+
+        /// <summary>
+        /// If an operation causes an exception, the Result should include it.
+        /// </summary>
+        public Exception Exception { get; private set; }
 
         /// <summary>
         /// Create a result with the Success property set to true.

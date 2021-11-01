@@ -12,7 +12,7 @@ namespace Model
             this.userLocationReader = userLocationReader;
         }
 
-        public Location Run()
+        public Result<Location> Run()
         {
             userLocationReader.UserId = UserId;
             return userLocationReader.Read();
