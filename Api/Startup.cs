@@ -55,7 +55,7 @@ namespace Api
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            // No HttpsRedirection - use Nginx to proxy to dotnet in docker;
 
             app.UseRouting();
 

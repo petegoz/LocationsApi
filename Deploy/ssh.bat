@@ -1,2 +1,2 @@
-c:\windows\sysnative\wsl.exe ssh -i "airbox_vm" ubuntu@167.99.199.67
+c:\windows\sysnative\wsl.exe ssh -i "airbox.pem" ubuntu@34.255.121.250
 pause
