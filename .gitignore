@@ -9,3 +9,6 @@ Operations/obj/
 Model/bin/
 Deploy/airbox_vm
 Deploy/airbox_vm.pub
+*.pem
+Deploy/digitalocean/airbox_vm
+Deploy/digitalocean/airbox_vm.pub
