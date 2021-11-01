@@ -1,7 +1,7 @@
 ﻿namespace Operations
 {
-    public interface ICommand<out T>
+    public interface ICommand<T>
     {
-        public T Run();
+        public Result<T> Run();
     }
 }

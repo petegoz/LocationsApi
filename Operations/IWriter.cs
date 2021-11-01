@@ -1,7 +1,7 @@
 ﻿namespace Operations
 {
-    public interface IWriter<out T>
+    public interface IWriter<T>
     {
-        public T Write();
+        public Result<T> Write();
     }
 }

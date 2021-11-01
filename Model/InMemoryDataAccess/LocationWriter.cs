@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Net;
 using Operations;
 
 namespace Model.InMemoryDataAccess
@@ -12,10 +13,18 @@ namespace Model.InMemoryDataAccess
             this.locationStore = locationStore;
         }
 
-        public Location Write()
+        public Result<Location> Write()
         {
-            locationStore.Add(Location);
-            return locationStore.FirstOrDefault(location => location.UserId == Location.UserId);
+            try
+            {
+                locationStore.Add(Location);
+                return Result<Location>.CreateSuccessResult(Location, "New location saved.");
+            }
+            catch (Exception exception)
+            {
+                var message = $"LocationWriter: {exception.Message}";
+                return Result<Location>.CreateFailureResult(message, HttpStatusCode.InternalServerError, exception);
+            }
         }
 
         public Location Location { get; set; }

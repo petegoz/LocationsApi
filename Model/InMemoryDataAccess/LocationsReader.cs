@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using Operations;
 
 namespace Model.InMemoryDataAccess
@@ -16,13 +18,24 @@ namespace Model.InMemoryDataAccess
             this.locationStore = locationStore;
         }
 
-        public IEnumerable<Location> Read()
+        public Result<IEnumerable<Location>> Read()
         {
-            // Group the locations by user:
-            var userLocations = locationStore.GroupBy(location => location.UserId);
+            try
+            {
+                // Group the locations by user:
+                var userLocations = locationStore.GroupBy(location => location.UserId);
 
-            // Take the current location for each user:
-            return userLocations.Select(singleUserLocations => singleUserLocations.OrderByDescending(location => location.DateTime).FirstOrDefault()).ToList();
+                // Take the current location for each user:
+                var locations = userLocations.Select(singleUserLocations => 
+                    singleUserLocations.OrderByDescending(location => location.DateTime).FirstOrDefault()).ToList();
+
+                return Result<IEnumerable<Location>>.CreateSuccessResult(locations, "Current locations found.");
+            }
+            catch (Exception exception)
+            {
+                var message = $"LocationsReader: {exception.Message}";
+                return Result<IEnumerable<Location>>.CreateFailureResult(message, HttpStatusCode.InternalServerError, exception);
+            }
         }
     }
 }

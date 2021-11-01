@@ -1,4 +1,7 @@
-﻿namespace Operations
+﻿using System;
+using System.Net;
+
+namespace Operations
 {
     /// <summary>
     /// Result contains data from the operation (command, query, reader or writer) with
@@ -23,6 +26,16 @@
         public bool Success { get; private set; }
 
         /// <summary>
+        /// StatusCode indicates the specific type of success or failure. 
+        /// </summary>
+        public HttpStatusCode StatusCode { get; set; }
+
+        /// <summary>
+        /// If an operation causes an exception, the Result should include it.
+        /// </summary>
+        public Exception Exception { get; private set; }
+
+        /// <summary>
         /// Create a result with the Success property set to true.
         /// </summary>
         /// <param name="data">The data from the operation.</param>
@@ -30,17 +43,19 @@
         /// <returns>A result containing the data.</returns>
         public static Result<T> CreateSuccessResult(T data, string message)
         {
-            return new Result<T> {Data = data, Success = true, Message = message};
+            return new Result<T> {Data = data, Success = true, StatusCode = HttpStatusCode.OK, Message = message};
         }
 
         /// <summary>
         /// Create a result with the Success property set to false.
         /// </summary>
         /// <param name="message">A human readable error message.</param>
+        /// <param name="statusCode">Indicates the specific type of failure.</param>
+        /// <param name="exception">Include the exception if the failure was caused by one.</param>
         /// <returns>A result containing an error message.</returns>
-        public static Result<T> CreateFailureResult(string message)
+        public static Result<T> CreateFailureResult(string message, HttpStatusCode statusCode, Exception exception = null)
         {
-            return new Result<T> { Success = false, Message = message };
+            return new Result<T> { Success = false, StatusCode = statusCode, Message = message, Exception = exception};
         }
     }
 }

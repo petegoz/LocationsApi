@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Model;
+using Operations;
 
 namespace Api.Controllers
 {
@@ -25,8 +28,8 @@ namespace Api.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Location>> GetAllUsersLocations()
         {
-            var locations = locationsQuery.Run();
-            return Ok(locations);
+            var result = locationsQuery.Run();
+            return ToActionResult(result);
         }
 
         /// <summary>
@@ -36,20 +39,20 @@ namespace Api.Controllers
         /// <returns>Latest location of the user.</returns>
         [HttpGet]
         [Route("{userId}")]
-        public OkObjectResult GetSingleUserLocation(string userId)
+        public ActionResult<Location> GetSingleUserLocation(string userId)
         {
             userLocationQuery.UserId = userId;
-            var location = userLocationQuery.Run();
-            return Ok(location);
+            var result = userLocationQuery.Run();
+            return ToActionResult(result); 
         }
 
         [HttpGet]
         [Route("{userId}/history")]
-        public OkObjectResult GetSingleUserLocationHistory(string userId)
+        public ActionResult<IEnumerable<Location>> GetSingleUserLocationHistory(string userId)
         {
             locationsQuery.UserId = userId;
-            var locations = locationsQuery.Run();
-            return Ok(locations);
+            var result = locationsQuery.Run();
+            return ToActionResult(result);
         }
 
         /// <summary>
@@ -64,8 +67,12 @@ namespace Api.Controllers
         {
             createLocationCommand.UserId = userId;
             createLocationCommand.Location = location;
-            var storedLocation = createLocationCommand.Run();
-            return CreatedAtAction(nameof(PostSingleUserLocation), storedLocation);
+            var result = createLocationCommand.Run();
+            if (!result.Success)
+            {
+                return ToActionResult(result);
+            }
+            return CreatedAtAction(nameof(PostSingleUserLocation), result.Data);
         }
 
         [HttpGet]
@@ -73,8 +80,30 @@ namespace Api.Controllers
         public ActionResult<IEnumerable<Location>> GetAllUsersLocationsWithArea([FromQuery] double n, [FromQuery] double s, [FromQuery] double e, [FromQuery] double w)
         {
             locationsQuery.Area = new Area(n, s, e, w);
-            var locations = locationsQuery.Run();
-            return Ok(locations);
+            var result = locationsQuery.Run();
+            return ToActionResult(result);
+        }
+
+        private ActionResult<T> ToActionResult<T>(Result<T> result)
+        {
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+            else if (result.Exception != null)
+            {
+                return StatusCode((int) HttpStatusCode.InternalServerError, result.Message);
+            }
+            else if (result.StatusCode == HttpStatusCode.NotFound)
+            {
+                return NotFound(result.Message);
+            }
+            else if (result.StatusCode == HttpStatusCode.BadRequest)
+            {
+                return BadRequest(result.Message);
+            }
+
+            return StatusCode((int) result.StatusCode, result.Message);
         }
     }
 }
