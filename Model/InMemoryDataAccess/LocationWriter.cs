@@ -1,4 +1,5 @@
-﻿using Operations;
+﻿using System;
+using Operations;
 
 namespace Model.InMemoryDataAccess
 {
@@ -13,8 +14,15 @@ namespace Model.InMemoryDataAccess
 
         public Result<Location> Write()
         {
-            locationStore.Add(Location);
-            return Result<Location>.CreateSuccessResult(Location, "New location saved.");
+            try
+            {
+                locationStore.Add(Location);
+                return Result<Location>.CreateSuccessResult(Location, "New location saved.");
+            }
+            catch (Exception exception)
+            {
+                return Result<Location>.CreateFailureResult($"LocationWriter: {exception.Message}", exception);
+            }
         }
 
         public Location Location { get; set; }

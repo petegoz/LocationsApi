@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Operations;
 
@@ -17,9 +18,20 @@ namespace Model.InMemoryDataAccess
 
         public Result<IEnumerable<Location>> Read()
         {
-            var userLocations = locationStore.Where(location => location.UserId == UserId);
-            var locations = userLocations.OrderByDescending(location => location.DateTime);
-            return Result<IEnumerable<Location>>.CreateSuccessResult(locations, $"Locations found for user {UserId}");
+            try
+            {
+                var userLocations = locationStore.Where(location => location.UserId == UserId).ToList();
+                if (!userLocations.Any())
+                {
+                    return Result<IEnumerable<Location>>.CreateFailureResult($"No locations found for user {UserId}");
+                }
+                var locations = userLocations.OrderByDescending(location => location.DateTime);
+                return Result<IEnumerable<Location>>.CreateSuccessResult(locations, $"Locations found for user {UserId}");
+            }
+            catch (Exception exception)
+            {
+                return Result<IEnumerable<Location>>.CreateFailureResult($"UserHistoryReader: {exception.Message}", exception);
+            }
         }
     }
 }

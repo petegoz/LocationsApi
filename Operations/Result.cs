@@ -44,10 +44,11 @@ namespace Operations
         /// Create a result with the Success property set to false.
         /// </summary>
         /// <param name="message">A human readable error message.</param>
+        /// <param name="exception">Include the exception if the failure was caused by one.</param>
         /// <returns>A result containing an error message.</returns>
-        public static Result<T> CreateFailureResult(string message)
+        public static Result<T> CreateFailureResult(string message, Exception exception = null)
         {
-            return new Result<T> { Success = false, Message = message };
+            return new Result<T> { Success = false, Message = message, Exception = exception};
         }
     }
 }
