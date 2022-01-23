@@ -72,7 +72,9 @@ namespace Api.Controllers
             {
                 return ToActionResult(result);
             }
-            return CreatedAtAction(nameof(PostSingleUserLocation), result.Data);
+
+            var routeValues = new {userId};
+            return CreatedAtAction(nameof(GetSingleUserLocation), routeValues, result.Data);
         }
 
         [HttpGet]
